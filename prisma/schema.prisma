@@ -1,0 +1,82 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  PLAYER
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  JUSTIFIED_ABSENCE
+}
+
+model User {
+  id          String     @id @default(uuid())
+  name        String
+  email       String     @unique
+  password    String
+  role        Role       @default(PLAYER)
+  createdAt   DateTime   @default(now())
+
+  createdTrainings Training[]     @relation("TrainingsCreated")
+  attendances      Attendance[]
+  evaluations      Evaluation[]  @relation("EvaluatedPlayer")
+  evaluationsMade  Evaluation[]  @relation("Evaluator")
+
+  @@map("users")
+}
+
+model Training {
+  id          String     @id @default(uuid())
+  date        DateTime
+  location    String
+  description String?
+
+  createdById String
+  createdBy   User       @relation("TrainingsCreated", fields: [createdById], references: [id])
+  attendances Attendance[]
+
+  createdAt   DateTime   @default(now())
+
+  @@map("trainings")
+}
+
+model Attendance {
+  id          String            @id @default(uuid())
+  userId      String
+  trainingId  String
+  status      AttendanceStatus
+  timestamp   DateTime          @default(now())
+
+  user        User              @relation(fields: [userId], references: [id])
+  training    Training          @relation(fields: [trainingId], references: [id])
+
+  @@unique([userId, trainingId])
+  @@map("attendances")
+}
+
+model Evaluation {
+  id            String   @id @default(uuid())
+  userId        String
+  evaluatorId   String
+  feedback      String
+  technical     Int
+  tactical      Int
+  physical      Int
+  mental        Int
+  createdAt     DateTime @default(now())
+
+  evaluatedUser User     @relation("EvaluatedPlayer", fields: [userId], references: [id])
+  evaluator     User     @relation("Evaluator", fields: [evaluatorId], references: [id])
+
+  @@map("evaluations")
+}
+
