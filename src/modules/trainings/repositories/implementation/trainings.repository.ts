@@ -23,4 +23,35 @@ export class TrainingsRepository implements TrainingsRepositoryInterface {
     },
   });
 }
+async findByMonth(month: number, year: number) {
+  const start = new Date(year, month - 1, 1);
+  const end = new Date(year, month, 0, 23, 59, 59);
+
+  return this.prisma.training.findMany({
+    where: {
+      date: {
+        gte: start,
+        lte: end,
+      },
+    },
+    orderBy: { date: 'asc' },
+  });
+}
+async findFutureTrainings() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  return this.prisma.training.findMany({
+    where: {
+      date: { gte: today },
+    },
+    orderBy: { date: 'asc' },
+  });
+}
+async findById(id: string): Promise<Training | null> {
+  return this.prisma.training.findUnique({
+    where: { id },
+  });
+}
+
 }

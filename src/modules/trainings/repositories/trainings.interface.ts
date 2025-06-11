@@ -10,4 +10,7 @@ export interface TrainingsRepositoryInterface {
     createdById: string;
   }): Promise<Training>;
   findAll(): Promise<Training[]>
+  findByMonth(month: number, year: number)
+  findFutureTrainings()
+  findById(id: string): Promise<Training | null>;
 }

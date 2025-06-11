@@ -23,4 +23,31 @@ export class TrainingsService {
   return this.trainingsRepo.findAll();
 }
 
+async getCalendar(month?: number, year?: number) {
+  const now = new Date();
+  const m = month ?? now.getMonth() + 1;
+  const y = year ?? now.getFullYear();
+
+  const trainings = await this.trainingsRepo.findByMonth(m, y);
+
+  const grouped = trainings.reduce((acc, training) => {
+    const date = training.date.toISOString().split('T')[0];
+    if (!acc[date]) acc[date] = [];
+    acc[date].push({
+      id: training.id,
+      location: training.location,
+      description: training.description,
+    });
+    return acc;
+  }, {} as Record<string, any[]>);
+
+  return Object.entries(grouped).map(([date, trainings]) => ({
+    date,
+    trainings,
+  }));
+}
+async findAvailableForPlayer(userId: string) {
+
+  return this.trainingsRepo.findFutureTrainings();
+}
 }

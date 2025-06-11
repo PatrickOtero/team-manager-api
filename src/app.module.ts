@@ -6,11 +6,10 @@ import { UsersModule } from './modules/users/users.module';
 import { TrainingsModule } from './modules/trainings/trainings.module';
 import { AttendancesModule } from './modules/attendance/attendance.module';
 import { EvaluationsModule } from './modules/evaluations/evaluations.module';
-import { APP_GUARD } from '@nestjs/core';
-import { RolesGuard } from './common/guards/roles.guard';
+import { DevelopmentPlansModule } from './modules/developmentPlans/development-plans.module';
 
 @Module({
-  imports: [AuthModule, UsersModule, TrainingsModule, AttendancesModule, EvaluationsModule],
+  imports: [AuthModule, UsersModule, TrainingsModule, AttendancesModule, EvaluationsModule, DevelopmentPlansModule],
   controllers: [AppController],
   providers: [AppService],
 })
